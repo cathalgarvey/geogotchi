@@ -28,6 +28,8 @@ from geogotchi.constants import BASE_URL
 from geogotchi.constants import DEFAULT_USERNAME
 from geogotchi import errors
 
+import sys
+_PY2 = sys.version_info < (3,)
 
 def _latlon_params(latlon):
     return {"lat": latlon[0], "lng": latlon[1]}
@@ -64,9 +66,16 @@ _convert_float = functools.partial(_convert, float)
 
 
 def _make_utf8(s):
-    if isinstance(s, unicode):
-        return s.encode("utf-8")
-    return s
+    if _PY2:
+        if isinstance(s, unicode):
+            return s.encode("utf-8")
+        return s
+    else:
+        if isinstance(s, str):
+            return s
+        elif isinstance(s, bytes):
+            return s.decode("utf-8")
+        return s
 
 
 def _norm(V):
